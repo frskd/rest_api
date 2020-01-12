@@ -1,4 +1,5 @@
 from enum import Enum
+import json
 
 import pickle
 from pandas import DataFrame
@@ -36,6 +37,6 @@ model = load_pickled_data("models/pkl_data/gs_model.pkl")
 
 def outcomes_for_data_frame(data_frame, encoder=encoder, model=model):
     endcoded_data = encoder.transform(data_frame)
-    model_result = model.predict_proba(endcoded_data)
+    model_result = model.predict_proba(endcoded_data).tolist()
     zipped_result = zip(model.classes_, model_result[0])
     return dict(zipped_result)
