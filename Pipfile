@@ -9,6 +9,7 @@ autopep8 = "*"
 [packages]
 pandas = "*"
 category-encoders = "*"
+xgboost = "*"
 
 [requires]
 python_version = "3.7"
