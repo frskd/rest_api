@@ -30,7 +30,8 @@ class OutcomeSchema(Schema):
         required=True)
     age = fields.Integer(required=True)
     is_pedestrian_stop = fields.Boolean(required=True)
-    ethnicity_id = fields.String(required=True)
+    ethnicity = fields.String(required=True)
+    location = fields.String()
 
     @validates("hour_of_day")
     def validate_hour_of_day(self, hour):
@@ -47,11 +48,17 @@ class OutcomeSchema(Schema):
         if age > 110:
             raise ValidationError("Age must be less than 111")
 
-    @validates("ethnicity_id")
+    @validates("ethnicity")
     def validate_ethnicity(self, ethnicity):
         if not Ethnicity(ethnicity):
             raise ValidationError(
                 f"Ethnicity must be one of: {' | '.join([e.value for e in Ethnicity])}")
+
+    @validates("location")
+    def validate_location(self, location):
+        if not Locations(location):
+            raise ValidationError(
+                f"Location must be one of: {' | '.join([l.value for l in Locations])}")
 
 
 class OutcomesList(Resource):
@@ -69,7 +76,7 @@ class OutcomesList(Resource):
                 state,
                 query_json["hour_of_day"],
                 query_json["age"],
-                Ethnicity(query_json["ethnicity_id"]),
+                Ethnicity(query_json["ethnicity"]),
                 StopType(
                     1) if query_json["is_pedestrian_stop"] else StopType(2)
             )
@@ -79,20 +86,33 @@ class OutcomesList(Resource):
 
         return outcomes
 
-# GET /outcomes/<str:locationId> Return outcomes data for a given state
-# Query Params:
-# hour_of_day: int - Between 0 and 23, inclusive (Defaults to 12)
-# age: int - Between 10 and 110. (Defaults to 16)
-# is_pedestrian_stop: bool - Vehicular or pedestrian stop. (Defaults to false)
-# ethnicityId: int - Ethnicity Id. (Default to unspecified)
+
+class Outcomes(Resource):
+
+    def get(self, location):
+        """
+        Return outcomes data for a given US state
+        """
+        query_params = request.args
+        query_json = OutcomeSchema().load(query_params)
+
+        data_frame = data_frame_from_input(
+            USAState(location),
+            query_json["hour_of_day"],
+            query_json["age"],
+            Ethnicity(query_json["ethnicity"]),
+            StopType(
+                1) if query_json["is_pedestrian_stop"] else StopType(2)
+        )
+        outcomes = outcomes_for_data_frame(data_frame)
+
+        return outcomes
 
 
 api.add_resource(Locations, "/locations")
 api.add_resource(Ethnicities, "/ethnicities")
 api.add_resource(OutcomesList, "/outcomes")
+api.add_resource(Outcomes, "/outcomes/<location>")
 
 if __name__ == "__main__":
     app.run(debug=True)
-    inputs = data_frame_from_input(
-        USAState("arizona"), 12, 16, Ethnicity("black"), StopType(1))
-    outcomes = outcomes_for_data_frame(inputs)
