@@ -14,8 +14,13 @@ class Locations(Resource):
         """
         return [{"id": state.name, "name": state.value} for state in USAState]
 
-# GET /ethnicities Returns a list of supported ethnicities:
-# white, hispanic, not_listed, black, asian/pacific islander, unspecified
+
+class Ethnicities(Resource):
+    def get(self):
+        """
+        Return a list of supported ethnicities: Array<{id: str, name: str}>
+        """
+        return [{"id": ethnicity.name, "name": ethnicity.value} for ethnicity in Ethnicity]
 
 # GET /outcomes Return outcomes data for each supported USA state
 
@@ -28,6 +33,7 @@ class Locations(Resource):
 
 
 api.add_resource(Locations, "/locations")
+api.add_resource(Ethnicities, "/ethnicities")
 
 if __name__ == "__main__":
     app.run(debug=True)
