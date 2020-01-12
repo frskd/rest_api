@@ -10,6 +10,7 @@ autopep8 = "*"
 pandas = "*"
 category-encoders = "*"
 xgboost = "*"
+flask-restful = "*"
 
 [requires]
 python_version = "3.7"
