@@ -12,6 +12,7 @@ category-encoders = "*"
 xgboost = "*"
 flask-restful = "*"
 marshmallow = "*"
+flask-cors = "*"
 
 [requires]
 python_version = "3.7"
