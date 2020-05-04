@@ -9,10 +9,12 @@ autopep8 = "*"
 [packages]
 pandas = "*"
 category-encoders = "*"
-xgboost = "*"
 flask-restful = "*"
 marshmallow = "*"
 flask-cors = "*"
+gunicorn = "*"
+python-dotenv = "*"
+xgboost = "~=0.9"
 
 [requires]
 python_version = "3.7"
